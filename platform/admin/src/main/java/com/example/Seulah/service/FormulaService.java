@@ -30,6 +30,9 @@ public class FormulaService {
     public ResponseEntity<MessageResponse> createCalculation(FormulaRequest formulaRequest, Long setId) {
         Optional<EligibilityQuestionSet> eligibilityQuestionSet = eligibilityQuestionSetRepository.findById(setId);
         if (eligibilityQuestionSet.isPresent()) {
+            if(eligibilityQuestionSet.get().getFormula()!=null){
+                return new ResponseEntity<>(new MessageResponse("Formula Already Exist ", null, false), HttpStatus.CREATED);
+            }
             Formula formula = new Formula();
             formula.setFormulaName(formulaRequest.getFormulaName());
             formula.setFormula(formulaRequest.getFormula());

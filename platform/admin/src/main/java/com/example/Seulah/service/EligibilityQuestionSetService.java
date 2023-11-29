@@ -113,8 +113,8 @@ public class EligibilityQuestionSetService {
 
             eligibilityQuestionSetRepository.save(eligibilityQuestionSet);
             questionSetRepository.save(questionSet);
-
-            return new ResponseEntity<>(new MessageResponse("Answer Updated Successfully", eligibilityQuestionSet, false), HttpStatus.OK);
+            List<EligibilityQuestionSet> eligibilityQuestionSets = eligibilityQuestionSetRepository.findAllByCustomOrder();
+            return new ResponseEntity<>(new MessageResponse("Answer Updated Successfully", eligibilityQuestionSets, false), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new MessageResponse("QuestionSet not found with id: " + questionId, null, false), HttpStatus.NOT_FOUND);
         }
@@ -157,12 +157,13 @@ public class EligibilityQuestionSetService {
 
     public ResponseEntity<MessageResponse> getQuestionSetByNumericAndString(Long id, Boolean forUser) {
         Optional<EligibilityQuestionSet> eligibilityQuestionSet = eligibilityQuestionSetRepository.findById(id);
-
+        Map<String, Object> responseData = new HashMap<>();
         List<Object> numericQuestions = new ArrayList<>();
         List<Object> textQuestions = new ArrayList<>();
         Set<QuestionValuePair> otherQuestions = new HashSet<>();
 
         eligibilityQuestionSet.ifPresent(questionSet -> {
+            responseData.put("Formula", eligibilityQuestionSet.get().getFormula());
             Set<Long> processedNumericQuestionIds = new HashSet<>();
             Set<Long> processedTextQuestionIds = new HashSet<>();
             Set<Long> processedOtherQuestionIds = new HashSet<>();
@@ -199,13 +200,14 @@ public class EligibilityQuestionSetService {
             });
         });
 
-        Map<String, Object> responseData = new HashMap<>();
+
         responseData.put("Numeric_Question", numericQuestions);
         responseData.put("Text_Question", textQuestions);
         responseData.put("Other_Question", otherQuestions);
 
         return new ResponseEntity<>(new MessageResponse("Success", responseData, false), HttpStatus.OK);
     }
+
     public ResponseEntity<MessageResponse> getAllDecision() {
         Map<String, QuestionSetResponse> questionSetResponsesMap = new HashMap<>();
 
@@ -213,12 +215,11 @@ public class EligibilityQuestionSetService {
 
         allQuestionSets.forEach(questionSet -> {
             Long setId = questionSet.getId();
+            String setName = questionSet.getName();
             Object formula = questionSet.getFormula() != null ? questionSet.getFormula() : null;
 
-            // Create or get the existing QuestionSetResponse for this set
-            QuestionSetResponse questionSetResponse = questionSetResponsesMap.computeIfAbsent(setId.toString(), key -> new QuestionSetResponse(setId, formula));
+            QuestionSetResponse questionSetResponse = questionSetResponsesMap.computeIfAbsent(setId.toString(), key -> new QuestionSetResponse(setId, formula, setName));
 
-            // Use separate sets for each question type and a set of processed question keys
             Set<String> processedNumericQuestions = new HashSet<>();
             Set<String> processedTextQuestions = new HashSet<>();
             Set<String> processedOtherQuestions = new HashSet<>();
@@ -261,13 +262,11 @@ public class EligibilityQuestionSetService {
                     }
                 }
             });
-
-            // Put the updated QuestionSetResponse back to the map
             questionSetResponsesMap.put(setId.toString(), questionSetResponse);
         });
 
         Map<String, Object> responseData = new HashMap<>();
-        responseData.put("QuestionSets", new ArrayList<>(questionSetResponsesMap.values()));
+        responseData.put("QuestionSets", new ArrayList<>(questionSetResponsesMap.values())); 
 
         return new ResponseEntity<>(new MessageResponse("Success", responseData, false), HttpStatus.OK);
     }

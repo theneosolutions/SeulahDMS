@@ -9,6 +9,8 @@ import java.util.*;
 @Setter
 public class QuestionSetResponse {
     private Long setId;
+
+    private String setName;
     private Object formula;
     private List<QuestionValuePair> numericQuestions;
     private List<QuestionValuePair> textQuestions;
@@ -17,9 +19,10 @@ public class QuestionSetResponse {
     // Constructors, getters, and setters
 
     // Example constructor
-    public QuestionSetResponse(Long setId,Object formula) {
+    public QuestionSetResponse(Long setId,Object formula,String setName) {
         this.setId = setId;
         this.formula = formula;
+        this.setName=setName;
         this.numericQuestions = new ArrayList<>();
         this.textQuestions = new ArrayList<>();
         this.otherQuestions = new HashSet<>();

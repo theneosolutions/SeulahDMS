@@ -16,12 +16,13 @@ public class Formula {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(nullable = false,unique = true)
     private String formulaName;
     @ElementCollection
     private List<String> formula;
-
+    @Column(nullable = false)
     private String operation;
+    @Column(nullable = false)
     private Double value;
 
     private Boolean isEligible;
