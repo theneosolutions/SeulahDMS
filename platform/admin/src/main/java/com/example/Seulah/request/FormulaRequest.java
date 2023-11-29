@@ -2,6 +2,8 @@ package com.example.Seulah.request;
 
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -11,11 +13,15 @@ import java.util.List;
 @ToString
 public class FormulaRequest {
 
-
+    @NotNull
+    @NotBlank
     private String formulaName;
 
     private List<String> formula;
-
+    @NotNull
+    @NotBlank
     private String operation;
+    @NotNull
+    @NotBlank
     private Double value;
 }
