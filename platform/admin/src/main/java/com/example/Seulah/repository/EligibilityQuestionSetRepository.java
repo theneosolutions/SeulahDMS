@@ -10,6 +10,4 @@ import java.util.List;
 
 public interface EligibilityQuestionSetRepository extends JpaRepository<EligibilityQuestionSet, Long> {
 
-    @Query("SELECT eq FROM EligibilityQuestionSet eq ORDER BY eq.id ASC")
-    List<EligibilityQuestionSet> findAllByCustomOrder();
 }
