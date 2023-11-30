@@ -113,8 +113,8 @@ public class EligibilityQuestionSetService {
 
             eligibilityQuestionSetRepository.save(eligibilityQuestionSet);
             questionSetRepository.save(questionSet);
-            List<EligibilityQuestionSet> eligibilityQuestionSets = eligibilityQuestionSetRepository.findAllByCustomOrder();
-            return new ResponseEntity<>(new MessageResponse("Answer Updated Successfully", eligibilityQuestionSets, false), HttpStatus.OK);
+
+            return new ResponseEntity<>(new MessageResponse("Answer Updated Successfully", eligibilityQuestionSet, false), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new MessageResponse("QuestionSet not found with id: " + questionId, null, false), HttpStatus.NOT_FOUND);
         }
@@ -236,7 +236,7 @@ public class EligibilityQuestionSetService {
                             String optionType = option.toLowerCase();
 
                             // Create a new instance for each question and add to the appropriate list in QuestionSetResponse
-                            QuestionValuePair questionValuePair = new QuestionValuePair(new EligibilityQuestions(question.getId(), eligibilityQuestions.getHeading(), eligibilityQuestions.getQuestion(), eligibilityQuestions.getType(), eligibilityQuestions.getOptions()), optionType.equals("other") ? question.getAnswer() : null);
+                            QuestionValuePair questionValuePair = new QuestionValuePair(new EligibilityQuestions(question.getId(), eligibilityQuestions.getHeading(), eligibilityQuestions.getQuestion(), eligibilityQuestions.getType(), eligibilityQuestions.getOptions()), !optionType.equals("numeric") && !optionType.equals("text") ? question.getAnswer() : null);
 
                             switch (optionType) {
                                 case "numeric":
@@ -266,7 +266,7 @@ public class EligibilityQuestionSetService {
         });
 
         Map<String, Object> responseData = new HashMap<>();
-        responseData.put("QuestionSets", new ArrayList<>(questionSetResponsesMap.values())); 
+        responseData.put("QuestionSets", new ArrayList<>(questionSetResponsesMap.values()));
 
         return new ResponseEntity<>(new MessageResponse("Success", responseData, false), HttpStatus.OK);
     }
